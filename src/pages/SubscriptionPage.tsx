@@ -232,5 +232,3 @@ const SubscriptionPage: React.FC = () => {
 };
 
 export default SubscriptionPage;
-
-export default SubscriptionPage
