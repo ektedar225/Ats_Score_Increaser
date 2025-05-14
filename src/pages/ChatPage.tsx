@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, PaperClip, Clock, FileText } from 'lucide-react';
+import { Send, Paperclip as PaperClip, Clock, FileText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { createClient } from '@supabase/supabase-js';
 import { format } from 'date-fns';
