@@ -1,66 +1,67 @@
-// This is a placeholder for Razorpay integration
-// In a real application, you would need to create an order on your backend
-// and then use Razorpay's checkout library to process the payment
+import { loadScript } from './loadScript';
 
-export const initializeRazorpay = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    
-    script.onload = () => {
-      resolve(true);
-    };
-    
-    script.onerror = () => {
-      resolve(false);
-    };
-    
-    document.body.appendChild(script);
-  });
+const RAZORPAY_KEY = 'rzp_test_YourTestKeyHere'; // Replace with your actual test key
+
+export const initializeRazorpay = async () => {
+  const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+  if (!res) {
+    alert('Razorpay SDK failed to load');
+    return false;
+  }
+  return true;
 };
 
-export const createRazorpayOrder = async (planId: string, amount: number, currency: string = 'INR') => {
-  // In a real application, this would be an API call to your backend
-  // Your backend would create a Razorpay order and return the order ID
-  
-  // Mock implementation
+export const createOrder = async (planDetails: {
+  amount: number;
+  currency: string;
+  receipt: string;
+}) => {
+  // In production, this should be an API call to your backend
+  // which creates the order using Razorpay's API
   return {
-    id: `order_${Math.random().toString(36).substring(2, 15)}`,
-    amount,
-    currency,
-    receipt: `receipt_${Math.random().toString(36).substring(2, 10)}`
+    id: `order_${Math.random().toString(36).substr(2, 9)}`,
+    ...planDetails
   };
 };
 
-export const openRazorpayCheckout = (
-  options: {
-    key: string;
+export const openRazorpayCheckout = async ({
+  orderDetails,
+  userDetails,
+  onSuccess,
+  onError
+}: {
+  orderDetails: {
     amount: number;
     currency: string;
+    orderId: string;
+  };
+  userDetails: {
     name: string;
-    description: string;
-    order_id: string;
-    handler: (response: any) => void;
+    email: string;
+  };
+  onSuccess: (response: any) => void;
+  onError: (error: any) => void;
+}) => {
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: orderDetails.amount,
+    currency: orderDetails.currency,
+    name: 'ATS Score Increaser',
+    description: 'Expert Resume Optimization Service',
+    order_id: orderDetails.orderId,
+    handler: (response: any) => {
+      onSuccess(response);
+    },
     prefill: {
-      name: string;
-      email: string;
-    };
+      name: userDetails.name,
+      email: userDetails.email,
+    },
     theme: {
-      color: string;
-    };
-  }
-) => {
-  // In a real application, you would call the Razorpay checkout here
-  
-  // Mock implementation for demo purposes
-  console.log('Razorpay checkout options:', options);
-  
-  // Since we can't actually open Razorpay, we'll simulate a successful payment
-  setTimeout(() => {
-    options.handler({
-      razorpay_payment_id: `pay_${Math.random().toString(36).substring(2, 15)}`,
-      razorpay_order_id: options.order_id,
-      razorpay_signature: `sig_${Math.random().toString(36).substring(2, 15)}`
-    });
-  }, 2000);
+      color: '#2563EB'
+    }
+  };
+
+  const paymentObject = new (window as any).Razorpay(options);
+  paymentObject.on('payment.failed', onError);
+  paymentObject.open();
 };
