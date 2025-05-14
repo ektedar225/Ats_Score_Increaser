@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import AboutPage from './pages/AboutPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import SuccessPage from './pages/SuccessPage';
+import ChatPage from './pages/ChatPage';
 
 // Components
 import Navbar from './components/Navbar';
@@ -35,6 +36,11 @@ function App() {
               <Route path="/success" element={
                 <ProtectedRoute>
                   <SuccessPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/chat" element={
+                <ProtectedRoute>
+                  <ChatPage />
                 </ProtectedRoute>
               } />
               <Route path="/" element={<Navigate to="/login" replace />} />
