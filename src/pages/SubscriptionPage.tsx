@@ -64,14 +64,50 @@ const SubscriptionPage: React.FC = () => {
     setSelectedPlan(planId);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!selectedPlan) return;
-    navigate('/success', { 
-      state: { 
-        plan: plans.find(plan => plan.id === selectedPlan),
-        user: currentUser?.displayName || currentUser?.email
-      } 
-    });
+    
+    const plan = plans.find(p => p.id === selectedPlan);
+    if (!plan) return;
+
+    const isInitialized = await initializeRazorpay();
+    if (!isInitialized) return;
+
+    try {
+      const orderDetails = await createOrder({
+        amount: plan.price * 100, // Razorpay expects amount in paise
+        currency: 'INR',
+        receipt: `rcpt_${Date.now()}`
+      });
+
+      await openRazorpayCheckout({
+        orderDetails: {
+          amount: orderDetails.amount,
+          currency: orderDetails.currency,
+          orderId: orderDetails.id
+        },
+        userDetails: {
+          name: currentUser?.displayName || '',
+          email: currentUser?.email || '',
+        },
+        onSuccess: (response) => {
+          navigate('/success', { 
+            state: { 
+              plan,
+              user: currentUser?.displayName || currentUser?.email,
+              paymentId: response.razorpay_payment_id
+            } 
+          });
+        },
+        onError: (error) => {
+          console.error('Payment failed:', error);
+          alert('Payment failed. Please try again.');
+        }
+      });
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('Could not initiate payment. Please try again.');
+    }
   };
 
   return (
