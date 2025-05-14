@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Calendar, MessageSquare } from 'lucide-react';
 
 interface LocationState {
   plan?: {
@@ -21,26 +21,6 @@ const SuccessPage: React.FC = () => {
     if (!state || !state.plan) {
       navigate('/subscriptions');
     }
-    
-    // Simulate confetti effect with JS or use a library like canvas-confetti
-    const createConfetti = () => {
-      // Simple confetti effect for demo purposes
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = `${Math.random() * 100}vw`;
-        confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        document.getElementById('confetti-container')?.appendChild(confetti);
-        
-        // Remove confetti after animation
-        setTimeout(() => {
-          confetti.remove();
-        }, 5000);
-      }
-    };
-    
-    createConfetti();
   }, [navigate, state]);
 
   if (!state || !state.plan) {
@@ -49,8 +29,6 @@ const SuccessPage: React.FC = () => {
 
   return (
     <div className="page-transition relative min-h-[calc(100vh-16rem)] bg-gradient-to-br from-primary-50 to-white py-16">
-      <div id="confetti-container" className="absolute inset-0 overflow-hidden pointer-events-none"></div>
-      
       <div className="container-custom">
         <div className="mx-auto max-w-2xl rounded-2xl bg-white p-8 shadow-xl">
           <div className="mb-6 flex justify-center">
@@ -62,7 +40,7 @@ const SuccessPage: React.FC = () => {
           <div className="text-center">
             <h1 className="mb-2 text-3xl font-bold text-gray-900">Payment Successful!</h1>
             <p className="mb-6 text-xl text-gray-600">
-              Thank you for subscribing to our premium Telegram channel.
+              Thank you for choosing our ATS Score Improvement service.
             </p>
             
             <div className="mb-8 rounded-lg bg-gray-50 p-6">
@@ -77,75 +55,59 @@ const SuccessPage: React.FC = () => {
               </div>
               <div className="mb-2 flex justify-between">
                 <span className="text-gray-600">Duration:</span>
-                <span className="font-medium text-gray-900">{state.plan.duration === 'monthly' ? 'Monthly' : 'Lifetime'}</span>
+                <span className="font-medium text-gray-900">{state.plan.duration}</span>
               </div>
               <div className="mb-2 flex justify-between">
-                <span className="text-gray-600">Subscriber:</span>
-                <span className="font-medium text-gray-900">{state.user || 'Subscriber'}</span>
-              </div>
-              <div className="mt-4 border-t border-gray-200 pt-4">
-                <div className="flex justify-between text-lg font-semibold">
-                  <span>Total:</span>
-                  <span>₹{state.plan.price}</span>
-                </div>
+                <span className="text-gray-600">User:</span>
+                <span className="font-medium text-gray-900">{state.user || 'User'}</span>
               </div>
             </div>
             
-            <div className="mb-8 rounded-lg border border-primary-100 bg-primary-50 p-6">
-              <h3 className="mb-3 text-lg font-medium text-primary-800">Next Steps</h3>
-              <p className="text-primary-700">
-                You'll receive an email with instructions on how to join our premium Telegram channel within the next 24 hours. Please check your inbox (and spam folder).
-              </p>
-              <div className="mt-4 flex items-center justify-center">
-                <button className="btn flex items-center space-x-2 bg-primary-600 px-6 py-2 text-white hover:bg-primary-700">
-                  <Send size={16} />
-                  <span>Join Telegram Channel</span>
+            <div className="mb-8 space-y-6">
+              <div className="rounded-lg border border-primary-100 bg-primary-50 p-6">
+                <h3 className="mb-3 text-lg font-medium text-primary-800">Next Steps</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-primary-600" />
+                    <p className="text-primary-700">
+                      Schedule your expert consultation through the dashboard
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MessageSquare className="h-5 w-5 text-primary-600" />
+                    <p className="text-primary-700">
+                      Access the chat portal to connect with our ATS experts
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="btn btn-primary"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={() => navigate('/chat')}
+                  className="btn btn-secondary"
+                >
+                  Open Chat Portal
                 </button>
               </div>
             </div>
             
-            <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-              <button 
-                onClick={() => navigate('/about')}
-                className="btn btn-outline flex items-center justify-center"
-              >
-                <ArrowLeft size={16} className="mr-2" />
-                Back to Home
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="btn btn-secondary"
-              >
-                Download Receipt
-              </button>
-            </div>
+            <button 
+              onClick={() => navigate('/about')}
+              className="btn btn-outline flex items-center justify-center"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Back to Home
+            </button>
           </div>
         </div>
       </div>
-      
-      <style>
-        {`
-          .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            top: -10px;
-            border-radius: 50%;
-            animation: confetti-fall linear forwards;
-          }
-          
-          @keyframes confetti-fall {
-            0% {
-              transform: translateY(0) rotate(0deg);
-              opacity: 1;
-            }
-            100% {
-              transform: translateY(100vh) rotate(720deg);
-              opacity: 0;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };
